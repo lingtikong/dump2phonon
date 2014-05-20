@@ -1,0 +1,33 @@
+Code to compute the dynamical matrix based on dump info.
+
+Usage:
+   d2p  control-file   dump-file
+
+The control file defines some parameters needed by the code,
+and should be written in the format of:
+  para-name    value(s)
+
+Any unknown line is skipped. The available para-names are:
+1) units value
+   defines the unit system used, can take any value that LAMMPS allows;
+   by default, value = lj.
+2) sysdim value
+   defines the dimension of the lattice; by default, value = 3.
+3) temperature value
+   defines the temperature at which MD is carried out; in temperature unit.
+   Must be provided.
+4) mass type value
+   defines the mass for each type, with a syntax of:
+      mass type number
+   in mass unit. Must be provided.
+5) mapfile value
+   defines the file that carries the mapping info; by default, value = map.in.
+6) prefix value
+   defines the prefix of all output files, by default: value = phonon.
+7) nskip value
+   defines the number of frames to be skipped, by default: value = 0.
+
+One or more LAMMPS atom dump files can be supplied.
+
+The generated binary file is the same as that by fix-phonon in LAMMPS,
+one can analyze it use the ``phana'' code.
