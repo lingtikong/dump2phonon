@@ -10,6 +10,7 @@
 Driver::Driver(int narg, char **arg)
 {
   first = 1;
+  iframe = 0;
   one = ref = NULL;
   flist.clear();
   fdump = NULL;
@@ -138,6 +139,7 @@ void Driver::readdump()
   }
 
   one = new DumpAtom(fdump, fname.c_str());
+  one->iframe = ++iframe;
 
   if (one->initialized == 0 && flist.size() > 0){
     while (flist.size() > 0){
@@ -148,6 +150,7 @@ void Driver::readdump()
         printf("\nWarning: faild to open file: %s\n", fname.c_str());
       } else {
         printf("Now to process file %s, takes time...\n", fname.c_str());
+        iframe = 0;
         break;
       }
     }
