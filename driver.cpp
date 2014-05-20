@@ -2,6 +2,7 @@
 #include "driver.h"
 #include "fix_phonon.h"
 #include <algorithm>
+#include "version.h"
 
 /* --------------------------------------------------------------------------- *
  * Constructor, main driver
@@ -12,18 +13,33 @@ Driver::Driver(int narg, char **arg)
   one = ref = NULL;
   flist.clear();
   fdump = NULL;
+  char *ctrl; ctrl = NULL;
 
-  // analyze command line options
-  if (narg < 3){
+  // analyse command line options
+  int iarg = 1;
+  while (narg > iarg){
+    if (strcmp(arg[iarg],"-h") == 0){ // help
+      help();
+
+    } else { // control file and dump file(s)
+      if (ctrl == NULL){
+        ctrl = new char [strlen(arg[iarg])+1];
+        strcpy(ctrl, arg[iarg]);
+      } else {
+        fname.assign(arg[iarg]);
+        if (find(flist.begin(), flist.end(), fname) == flist.end()) flist.push_back(fname);
+      }
+    }
+
+    ++iarg;
+  }
+
+  // check command line options
+  if (ctrl == NULL){
     printf("\nError: insufficient command line options!\n");
     help();
   }
 
-  // strip dump file name(s)
-  for (int iarg = 2; iarg < narg; ++iarg){
-    fname.assign(arg[iarg]);
-    if (find(flist.begin(), flist.end(), fname) == flist.end()) flist.push_back(fname);
-  }
   int ndump = flist.size();
   if (ndump < 1){
     printf("\nError: no dump file passed!\n");
@@ -31,7 +47,8 @@ Driver::Driver(int narg, char **arg)
   }
 
   // initialize fix-phonon
-  FixPhonon *phonon = new FixPhonon(arg[1]);
+  FixPhonon *phonon = new FixPhonon(ctrl);
+  delete []ctrl;
   if (phonon->status > 0) return;
 
   // read first/reference frame from dump file(s)
@@ -64,7 +81,7 @@ Driver::Driver(int narg, char **arg)
     phonon->one = one;
 
     phonon->end_of_step();
-    delete one;
+    delete one; one = NULL;
 
     readdump();
   }
@@ -82,6 +99,7 @@ return;
 Driver::~Driver()
 {
   if (ref) delete ref;
+  if (one) delete one;
   if (fdump) fclose(fdump);
 
   fname.clear();
@@ -93,7 +111,8 @@ return;
  * --------------------------------------------------------------------------- */
 void Driver::help()
 {
-  printf("\nd2p: phonons from MD trajectories.\n");
+  printf("\nd2p  version 0.%d, compiled on %s %s\n", VERSION, __DATE__, __TIME__);
+  printf("\nPhonons from MD trajectories.\n");
   printf("\nUsage:\n   d2p control-file  dump-file [dump-file2]\n");
   printf("\n");
   exit(0);
@@ -110,6 +129,8 @@ void Driver::readdump()
       fdump = fopen(fname.c_str(), "r");
       if (fdump == NULL){
         printf("\nWarning: faild to open file: %s\n", fname.c_str());
+      } else {
+        printf("Now to process file %s, takes time...\n", fname.c_str());
       }
     }
 
@@ -126,12 +147,13 @@ void Driver::readdump()
       if (fdump == NULL){
         printf("\nWarning: faild to open file: %s\n", fname.c_str());
       } else {
+        printf("Now to process file %s, takes time...\n", fname.c_str());
         break;
       }
     }
 
     if (fdump){
-      delete one;
+      delete one; one = NULL;
       readdump();
     }
   }
