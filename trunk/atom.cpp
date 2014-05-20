@@ -15,6 +15,7 @@ DumpAtom::DumpAtom(FILE *fp, const char *dumpfile)
   cartesian = 0;
 
   attyp = NULL; atpos = x = s = NULL;
+  memory = NULL; fname = NULL;
 
   if (fp == NULL) return;
 
@@ -53,7 +54,14 @@ DumpAtom::DumpAtom(FILE *fp, const char *dumpfile)
   zhi = atof(strtok(NULL," \n\t\r\f"));
   if (n == 3) yz = atof(strtok(NULL," \n\t\r\f"));
   
-  if (xy*xy+xz*xz+yz*yz > ZERO) triclinic = 1;
+  if (xy*xy+xz*xz+yz*yz > ZERO){
+    triclinic = 1;
+
+    xlo -= MIN(MIN(0., xy), MIN(xz, xy+xz));
+    xhi -= MAX(MAX(0., xy), MAX(xz, xy+xz));
+    ylo -= MIN(0., yz);
+    yhi -= MAX(0., yz);
+  }
 
   // fields info
   int dcols[6], fcord = 7;
@@ -110,25 +118,22 @@ DumpAtom::DumpAtom(FILE *fp, const char *dumpfile)
     } else { return; } // insufficient info, return
   }
 
-  lx = box[0] = axis[0][0] = xhi - xlo;
-  ly = box[1] = axis[1][1] = yhi - ylo;
-  lz = box[2] = axis[2][2] = zhi - zlo;
+  lx = h[0] = axis[0][0] = xhi - xlo;
+  ly = h[1] = axis[1][1] = yhi - ylo;
+  lz = h[2] = axis[2][2] = zhi - zlo;
   hx = 0.5*lx;  hy = 0.5*ly;  hz = 0.5*lz;
 
-  box[3] = axis[1][0] = xy;
-  box[4] = axis[2][0] = xz;
-  box[5] = axis[2][1] = yz;
+  h[5] = axis[1][0] = xy;
+  h[4] = axis[2][0] = xz;
+  h[3] = axis[2][1] = yz;
   axis[0][1] = axis[0][2] = axis[1][2] = 0.;
-  for (int idim = 0; idim < 3; ++idim) hbox[idim] = 0.5*box[idim];
-  h[0] = lx; h[1] = ly; h[2] = lz;
-  h[3] = yz; h[4] = xz; h[5] = xy;
 
-  h_inv[0] = 1.0/box[0];
-  h_inv[1] = 1.0/box[1];
-  h_inv[2] = 1.0/box[2];
-  h_inv[3] = -box[3] / (box[1]*box[2]);
-  h_inv[4] = (box[3]*box[5] - box[1]*box[4]) / (box[0]*box[1]*box[2]);
-  h_inv[5] = -box[5] / (box[0]*box[1]);
+  h_inv[0] = 1./h[0];
+  h_inv[1] = 1./h[1];
+  h_inv[2] = 1./h[2];
+  h_inv[3] = -h[5] / (h[1]*h[2]);
+  h_inv[4] = (h[5]*h[3] - h[1]*h[4]) / (h[0]*h[1]*h[2]);
+  h_inv[5] = -h[3] / (h[0]*h[1]);
 
   // in case cartesian coordinate read, convert to fractional
   if ((fcord&7) == 0){
@@ -147,14 +152,14 @@ return;
  *----------------------------------------------------------------------------*/
 DumpAtom::~DumpAtom()
 {
-  if (fname)   delete []fname;
-  memory->destroy(attyp);
+  if (fname) delete []fname;
+  if (attyp) memory->destroy(attyp);
 
   atpos = NULL;
-  memory->destroy(x);
-  memory->destroy(s);
+  if (x) memory->destroy(x);
+  if (s) memory->destroy(s);
 
-  delete memory;
+  if (memory) delete memory;
 }
 
 
