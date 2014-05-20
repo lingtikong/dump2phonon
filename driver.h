@@ -19,7 +19,7 @@ private:
 
   DumpAtom *one, *ref;                    // pointer to one frame
 
-  int first;
+  int first, iframe;
   FILE *fdump;
   void readdump();
   void compute();
