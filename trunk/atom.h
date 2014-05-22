@@ -20,30 +20,32 @@ public:
   DumpAtom(FILE *fp, const char *);
   ~DumpAtom();
 
+  char *fname;
   int iframe;
   int natom, ntype, tstep;
   int initialized;
 
-  char *fname;
+  double h[6];
 
-  Memory *memory;
-  double xlo, xhi, ylo, yhi, zlo, zhi;
-  double xy, xz, yz;
-  double lx, ly, lz, h_inv[6], h[6];
-  double hx, hy, hz;
   int *attyp;     // note: atom IDs go from 1 to natom; type ID from 1 to ntype
   double **atpos;
-  double axis[3][3];
 
   void wrap2ref(DumpAtom *);
   void apply_pbc(double *);
 
 private:
+  double xlo, xhi, ylo, yhi, zlo, zhi;
+  double lx, ly, lz, h_inv[6];
+  double xy, xz, yz;
+  double hx, hy, hz;
+  double axis[3][3];
+
+  Memory *memory;
   int cartesian, triclinic;
   double **x, **s;
+
   void car2dir();
   void dir2car();
-
   int count_words(const char *);
 };
 #endif

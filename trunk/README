@@ -31,3 +31,6 @@ One or more LAMMPS atom dump files can be supplied.
 
 The generated binary file is the same as that by fix-phonon in LAMMPS,
 one can analyze it use the ``phana'' code.
+
+
+FFTW3 is required by this code.

@@ -268,8 +268,8 @@ void DumpAtom::wrap2ref(DumpAtom *ref)
   }
 
   // need cartesian coordinate system
-  dir2car();
   ref->dir2car();
+  dir2car();
 
   if (triclinic) {  // non-orthogonal box
     for (int id = 1; id <= natom; ++id){
