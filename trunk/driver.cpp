@@ -3,6 +3,7 @@
 #include "fix_phonon.h"
 #include <algorithm>
 #include "version.h"
+#include "timer.h"
 
 /* --------------------------------------------------------------------------- *
  * Constructor, main driver
@@ -63,7 +64,7 @@ Driver::Driver(int narg, char **arg)
   fclose(fp);
 
   if (ref->initialized == 0){
-    printf("\nError while reading the first from from dump file %s!\n", fname.c_str());
+    printf("\nError while reading the first frame from dump file %s!\n", fname.c_str());
     help();
   }
 
@@ -75,6 +76,7 @@ Driver::Driver(int narg, char **arg)
   }
   phonon->setup();
 
+  Timer *timer = new Timer();
   // now to proceed the real computation
   for (int i = 0; i <= phonon->nskip; ++i) readdump();
   while (one->initialized){
@@ -89,8 +91,12 @@ Driver::Driver(int narg, char **arg)
 
   // finalize
   phonon->post_run();
+  delete phonon;
 
-  fname.clear();
+  timer->stop();
+  timer->print();
+  delete timer;
+
 return;
 }
 
