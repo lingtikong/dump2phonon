@@ -114,7 +114,7 @@ FixPhonon::FixPhonon(const char *control)
       type2mass[ip] = m;
 
     // map file
-    } else if (strcmp(ptr, "map") == 0){
+    } else if (strcmp(ptr, "mapfile") == 0){
       ptr = strtok(NULL, " \n\t\r\f");
       if (mapfile) delete []mapfile;
       mapfile = new char[strlen(ptr)+1];
