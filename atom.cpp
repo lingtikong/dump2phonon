@@ -122,6 +122,10 @@ DumpAtom::DumpAtom(FILE *fp, const char *dumpfile)
   ly = h[1] = axis[1][1] = yhi - ylo;
   lz = h[2] = axis[2][2] = zhi - zlo;
   hx = 0.5*lx;  hy = 0.5*ly;  hz = 0.5*lz;
+  if (lx*lx < ZERO || ly*ly < ZERO || lz*lz < ZERO){
+    printf("\nERROR: One edge of your box is of zero length, please confirm!\n\n");
+    return;
+  }
 
   h[5] = axis[1][0] = xy;
   h[4] = axis[2][0] = xz;
