@@ -1,8 +1,11 @@
+#===============================================================================
 Code to compute the dynamical matrix based on dump info.
-
+#
 Usage:
    d2p  control-file   dump-file
 
+#-------------------------------------------------------------------------------
+# CONTROL-FILE INFO
 The control file defines some parameters needed by the code,
 and should be written in the format of:
   para-name    value(s)
@@ -27,10 +30,31 @@ Any unknown line is skipped. The available para-names are:
 7) nskip value
    defines the number of frames to be skipped, by default: value = 0.
 
+#-------------------------------------------------------------------------------
+# INPUT INFO
 One or more LAMMPS atom dump files can be supplied.
 
+# OUTPUT INFO
 The generated binary file is the same as that by fix-phonon in LAMMPS,
-one can analyze it use the ``phana'' code.
+one can analyze it use the ``phana'' code, which is available at:
+  https://github.com/lingtikong/phana.git
 
+#-------------------------------------------------------------------------------
+# INSTALL
+To compile the code, simply follow:
+1) modify Makefile, so that the paths to fftw3 is correctly set;
+2) make
 
+#-------------------------------------------------------------------------------
+# UPDATE
+For updates, please check:
+  https://github.com/lingtikong/dump2phonon.git
+
+# DEPENDENCES
 FFTW3 is required by this code.
+
+#-------------------------------------------------------------------------------
+# COPYRIGHT
+Author: Lingti Kong, konglt(at)sjtu.edu.cn
+Jan 2022
+#===============================================================================
